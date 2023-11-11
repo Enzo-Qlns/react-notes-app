@@ -1,23 +1,27 @@
 version: "3.1"
 
 services:
-  react-note-app-front:
-    container_name: react-note-app-nginx
-    image: react-note-app-nginx:latest
-    build: 
-      - context: ./front
-      - dockerfile: Dockerfile
+  react-note-app-nginx:
+    container_name: nginx-react-note-app
+    image: nginx-react-note-app:latest
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
     restart: always
+    ports:
+      - 8084:8084
     networks:
       - react-note-app-networks
     depends_on:
       - react-note-app-server
     volumes:
       - ./front/build:/usr/share/nginx/html
-    
+
   react-note-app-server:
-    container_name: react-note-app-server
-    image: react-note-app-server:latest
+    container_name: server-react-note-app
+    image: server-react-note-app:latest
+    command: json-server db.json --port 8000
+    restart: always
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -26,5 +30,5 @@ services:
     volumes:
       - ./server/db.json:/var/www/server/db.json
 
-  networks:
-    react-note-app-networks:
+networks:
+  react-note-app-networks:
