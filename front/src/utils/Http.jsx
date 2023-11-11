@@ -72,7 +72,7 @@ const Http = {
 
     request_get_weather(lat, long, onResponse = undefined) {
         const options = this.defaultOptions();
-        return this.call("http://api.weatherapi.com/v1/current.json?key=" + Vars.getApiKeyWeather() + "&q=" + lat + "," + long, options, onResponse);
+        return this.call("https://api.weatherapi.com/v1/current.json?key=" + Vars.getApiKeyWeather() + "&q=" + lat + "," + long, options, onResponse);
     },
 };
 export default Http;
