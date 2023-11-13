@@ -42,7 +42,7 @@ const Http = {
 
     request_get_notes(onResponse = undefined) {
         const options = this.defaultOptions();
-        return this.call(Vars.getHost() + '/notes', options, onResponse);
+        return this.call(Vars.getHost() + '/notes/', options, onResponse);
     },
 
     request_get_specific_note(index, onResponse = undefined) {
@@ -54,7 +54,7 @@ const Http = {
         const options = this.defaultOptions();
         options.method = 'POST';
         options.body = JSON.stringify({ "title": title, "updated": updated, "content": content });
-        return this.call(Vars.getHost() + '/notes', options, onResponse);
+        return this.call(Vars.getHost() + '/notes/', options, onResponse);
     },
 
     request_delete_note(index, onResponse = undefined) {
