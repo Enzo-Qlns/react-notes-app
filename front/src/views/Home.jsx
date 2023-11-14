@@ -21,6 +21,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     const navigate = useNavigate();
     const params = useParams();
     const paramsNoteId = Number.parseInt(params.noteId) || 1;
+    const [isInitialRequest200, setIsInitialRequest200] = useState(false);
 
     // Fonction pour afficher la note cliquée
     const handleClickNote = (index) => {
@@ -101,10 +102,9 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                     setCurrentNote(newObj);
                 } else {
                     let currentNote = notes.filter(elt => elt.id === paramsNoteId)[0];
-                    console.log(paramsNoteId, currentNote)
                     setNotes(notes.reverse());
                     setCurrentNote(currentNote);
-                    if (!Utils.isEmpty(notes)) {
+                    if (!Utils.isEmpty(notes) && Utils.isEmpty(params.noteId)) {
                         navigate('/notes/' + notes.length);
                     };
                 };
@@ -136,6 +136,8 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
+                        borderRight: 'solid 1px grey',
+                        borderRadius: '0.5rem 0',
                         p: 1,
                     }}
                 >
@@ -146,11 +148,13 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                         <AddCircleOutlineIcon />
                     </IconButton>
                 </Box>
-                <Divider />
                 <Box
                     sx={{
                         height: '88%',
-                        overflowY: 'scroll',
+                        overflowY: 'auto',
+                        borderRight: 'solid 1px grey',
+                        borderTop: 'solid 1px grey',
+                        borderRadius: '0 0.5rem 0 0',
                     }}
                 >
                     {notes && (
@@ -194,6 +198,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
+                            ml: 1,
                         }}
                     >
                         <PlaceIcon />
