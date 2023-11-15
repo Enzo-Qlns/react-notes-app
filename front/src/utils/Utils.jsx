@@ -57,6 +57,7 @@ const Utils = {
                 userInfo.ipAddress = data.ip;
             } catch (error) {
                 console.error('Erreur lors de la récupération de l\'adresse IP :', error);
+                reject();
             }
 
             // Obtenir la géolocalisation de l'utilisateur en utilisant l'API HTML5
@@ -64,16 +65,14 @@ const Utils = {
                 navigator.geolocation.getCurrentPosition((position) => {
                     userInfo.latitude = position.coords.latitude.toString();
                     userInfo.longitude = position.coords.longitude.toString();
-                    resolve(userInfo); // Renvoie l'objet userInfo une fois que les coordonnées sont disponibles
+                    resolve(userInfo);
                 }, (error) => {
                     console.error('Erreur lors de la récupération de la géolocalisation :', error);
-                    userInfo.latitude = 0;
-                    userInfo.longitude = 0;
-                    resolve(userInfo); // Renvoie l'objet userInfo même en cas d'erreur de géolocalisation
+                    reject();
                 });
             } else {
                 console.error('La géolocalisation n\'est pas prise en charge par ce navigateur.');
-                resolve(userInfo); // Renvoie l'objet userInfo en indiquant que la géolocalisation n'est pas disponible
+                reject();
             }
         });
     }

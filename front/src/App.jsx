@@ -5,6 +5,7 @@ import HomePage from './views/Home';
 import Utils from './utils/Utils';
 import Http from './utils/Http';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
+import './views/animations.css';
 
 export default function App() {
   const get_notes = (funcAs200, funcAsErr) => {

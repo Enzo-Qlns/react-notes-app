@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Card, CardActionArea, CardActions, CardContent, Divider, IconButton, Typography } from '@mui/material';
+import { Box, Button, Card, CardActionArea, CardActions, CardContent, IconButton, Skeleton, Typography } from '@mui/material';
 import DateManager from '../utils/DateManager';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,12 +16,12 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     const [userInfo, setUserInfo] = useState({
         temp: null,
         state: null,
+        isAccept: false
     });
     // const [isFirst]
     const navigate = useNavigate();
     const params = useParams();
     const paramsNoteId = Number.parseInt(params.noteId) || 1;
-    const [isInitialRequest200, setIsInitialRequest200] = useState(false);
 
     // Fonction pour afficher la note cliquée
     const handleClickNote = (index) => {
@@ -86,7 +86,9 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     const handleClickDeleteNote = (noteId) => {
         if (!Utils.isEmpty(deleteNote)) {
             deleteNote(noteId, () => {
-                setNotes(notes.filter(a => a.id !== noteId));
+                let updatedNotes = notes.filter(a => a.id !== noteId);
+                setNotes(updatedNotes);
+                setCurrentNote(updatedNotes[0]);
                 navigate('/notes/' + (paramsNoteId - 1));
             });
         };
@@ -114,8 +116,10 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                 getWeather(userInfo.latitude, userInfo.longitude, (res) => {
                     let temp = res.current.temp_c;
                     let state = res.location.name;
-                    setUserInfo({ temp: temp, state: state });
+                    setUserInfo({ temp: temp, state: state, isAccept: true });
                 });
+            }, () => {
+                setUserInfo({ isAccept: false });
             });
         };
     }, []);
@@ -157,7 +161,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                         borderRadius: '0 0.5rem 0 0',
                     }}
                 >
-                    {notes && (
+                    {!Utils.isEmpty(notes) && (
                         notes.map((note, index) => (
                             <Card
                                 key={index}
@@ -169,6 +173,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                                         bgcolor: paramsNoteId !== note.id && 'var(--grey)',
                                     },
                                 }}
+                                className='fade-in'
                             >
                                 <CardActionArea
                                     onClick={() => handleClickNote(note.id)}
@@ -190,22 +195,30 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                                         </Button>
                                     </CardActions>)}
                             </Card>
-                        )))}
+                        ))
+                    )}
                 </Box>
-                {(userInfo.temp !== null && userInfo.state !== null) && (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            ml: 1,
-                        }}
-                    >
-                        <PlaceIcon />
-                        <Typography variant='subtitle1' mr={1}>{userInfo.state}</Typography>
-                        <ThermostatIcon />
-                        <Typography variant='subtitle1'>{userInfo.temp}°C</Typography>
-                    </Box>)}
+                {userInfo.isAccept &&
+                    (!Utils.isEmpty(userInfo.temp, userInfo.state) ?
+                        (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    ml: 1,
+                                }}
+                                className='fade-in'
+                            >
+                                <PlaceIcon />
+                                <Typography variant='subtitle1' mr={1}>{userInfo.state}</Typography>
+                                <ThermostatIcon />
+                                <Typography variant='subtitle1'>{userInfo.temp}°C</Typography>
+                            </Box>
+                        ) : (
+                            <Skeleton animation="wave" variant='rectangular' height={40} />
+                        ))
+                }
             </Box>
             {/* END LEFT BOX */}
 
@@ -223,8 +236,8 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                 {Utils.objSize(currentNote) !== 0 && (
                     <>
                         <Note
-                            onChangeNote={handleChangeUpdateNote}
                             currentNote={currentNote}
+                            onChangeNote={handleChangeUpdateNote}
                         />
                         {isSaving && (
                             <Fade in={isSaving}>
