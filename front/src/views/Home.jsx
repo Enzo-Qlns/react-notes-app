@@ -114,9 +114,11 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                 } else {
                     let currentNote = notes.filter(elt => elt.id === paramsNoteId)[0];
                     setNotes(notes.reverse());
-                    setCurrentNote(currentNote);
                     if (!Utils.isEmpty(notes) && Utils.isEmpty(params.noteId)) {
-                        navigate('/notes/' + notes.length);
+                        setCurrentNote(notes[0]);
+                        navigate('/notes/' + notes[0].id);
+                    } else {
+                        setCurrentNote(currentNote);
                     };
                 };
             });
@@ -214,11 +216,12 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    ml: 1,
+                                    p: 1,
+                                    pb: 0,
                                 }}
                                 className='fade-in'
                             >
-                                <PlaceIcon />
+                                <PlaceIcon /> {/** */}
                                 <Typography variant='subtitle1' mr={1}>{userInfo.state}</Typography>
                                 <ThermostatIcon />
                                 <Typography variant='subtitle1'>{userInfo.temp}°C</Typography>

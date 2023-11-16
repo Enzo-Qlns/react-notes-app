@@ -1,4 +1,4 @@
-import { Box, TextField } from "@mui/material";
+import { Divider, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import Utils from "../utils/Utils";
 
@@ -9,29 +9,29 @@ export default function Note({ currentNote, onChangeNote }) {
 
     /**
      * Fonction qui permet de changer l'input title
-     * @param {String} e event de la fonction
+     * @param {String} event event de la fonction
      */
-    const handleChangeTitle = (e) => {
+    const handleChangeTitle = (event) => {
         setIsTyping(true);
         setCurrentTitle((prevState) => {
-            if (prevState !== e.target.value && !Utils.isEmpty(e.target.value)) {
-                return e.target.value;
+            if (prevState !== event.target.value && !Utils.isEmpty(event.target.value)) {
+                return event.target.value;
             }
-            return e.target.value;
+            return event.target.value;
         });
     };
 
     /**
      * Fonction qui permet de changer l'input content
-     * @param {String} e event de la fonction
+     * @param {String} event event de la fonction
      */
-    const handleChangeContent = (e) => {
+    const handleChangeContent = (event) => {
         setIsTyping(true);
         setCurrentContent((prevState) => {
-            if (prevState !== e.target.value && !Utils.isEmpty(e.target.value)) {
-                return e.target.value;
+            if (prevState !== event.target.value && !Utils.isEmpty(event.target.value)) {
+                return event.target.value;
             }
-            return e.target.value;
+            return event.target.value;
         });
     };
 
@@ -66,9 +66,9 @@ export default function Note({ currentNote, onChangeNote }) {
                 placeholder='Ecrire un titre'
                 onChange={handleChangeTitle}
                 name='title'
-                type="text"
+                type='text'
                 autoFocus
-                autoComplete="off"
+                autoComplete='off'
                 required
                 inputProps={{
                     style: {
@@ -78,6 +78,7 @@ export default function Note({ currentNote, onChangeNote }) {
                 }}
                 fullWidth
             />
+            <Divider sx={{ width: 200, borderRadius: '0.5rem' }} />
             <TextField
                 value={currentContent}
                 placeholder='Commencez à écrire'
@@ -86,7 +87,7 @@ export default function Note({ currentNote, onChangeNote }) {
                 type='text'
                 multiline
                 maxRows={2}
-                autoComplete="off"
+                autoComplete='off'
                 inputProps={{
                     style: {
                         height: '80vh',
