@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Card, CardActionArea, CardActions, CardContent, IconButton, Skeleton, Typography } from '@mui/material';
-import DateManager from '../utils/DateManager';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useNavigate, useParams } from 'react-router-dom';
-import Utils from '../utils/Utils';
-import Note from '../components/Note';
+import { Box, Button, Card, CardActionArea, CardActions, CardContent, IconButton, Skeleton, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import PlaceIcon from '@mui/icons-material/Place';
+import DateManager from '../utils/DateManager';
+import Utils from '../utils/Utils';
+import Note from '../components/Note';
 
 export default function Home({ getNotes, updateNote, addNote, getSpecificNote, deleteNote, getWeather, getState }) {
     const [notes, setNotes] = useState([]);
@@ -18,12 +18,14 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         state: null,
         isAccept: false
     });
-    // const [isFirst]
     const navigate = useNavigate();
     const params = useParams();
     const paramsNoteId = Number.parseInt(params.noteId) || 1;
 
-    // Fonction pour afficher la note cliquée
+    /**
+     * Fonction pour afficher la note cliquée
+     * @param {Number} index 
+     */
     const handleClickNote = (index) => {
         navigate('/notes/' + (index));
         if (!Utils.isEmpty(getSpecificNote)) {
@@ -40,7 +42,11 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         };
     };
 
-    // Fonction pour modifier une note 
+    /**
+     * Fonction pour modifier une note 
+     * @param {String} title 
+     * @param {String} content 
+     */
     const handleChangeUpdateNote = (title, content) => {
         if (!Utils.isEmpty(updateNote, addNote)) {
             if (Utils.isEmpty(notes)) {
@@ -69,7 +75,9 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         };
     };
 
-    // Fonction pour ajouter une note 
+    /**
+     * Fonction pour ajouter une note 
+     */
     const handleClickAddNote = () => {
         if (!Utils.isEmpty(addNote)) {
             addNote("", new Date(), "", (resNote) => {
@@ -82,7 +90,10 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         };
     };
 
-    // Fonction pour supprimer une note
+    /**
+     * Fonction pour supprimer une note
+     * @param {Number} noteId 
+     */
     const handleClickDeleteNote = (noteId) => {
         if (!Utils.isEmpty(deleteNote)) {
             deleteNote(noteId, () => {
@@ -94,7 +105,9 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         };
     };
 
-    // Requete initial pour récupérer les notes && vérifie si paramsNoteId dans url
+    /**
+     * Requete initial pour récupérer les notes && vérifie si paramsNoteId dans url
+     */
     useEffect(() => {
         if (!Utils.isEmpty(getNotes, getWeather)) {
             // Récupère les notes
