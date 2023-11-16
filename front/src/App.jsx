@@ -137,6 +137,7 @@ export default function App() {
   const darkTheme = createTheme({
     palette: {
       mode: 'dark',
+      background: 'var(--grey)'
     },
   });
 

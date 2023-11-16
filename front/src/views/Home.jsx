@@ -9,7 +9,7 @@ import DateManager from '../utils/DateManager';
 import Utils from '../utils/Utils';
 import Note from '../components/Note';
 
-export default function Home({ getNotes, updateNote, addNote, getSpecificNote, deleteNote, getWeather, getState }) {
+export default function Home({ getNotes, updateNote, addNote, getSpecificNote, deleteNote, getWeather }) {
     const [notes, setNotes] = useState([]);
     const [currentNote, setCurrentNote] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
@@ -52,9 +52,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
             if (Utils.isEmpty(notes)) {
                 addNote(title, new Date(), content, (resNote) => {
                     setCurrentNote(resNote);
-                    getNotes((resNotes) => {
-                        setNotes(resNotes.reverse());
-                    });
+                    setNotes(current => [resNote, ...current]);
                 });
             } else {
                 updateNote(paramsNoteId, title.toString(), new Date(), content.toString(), (res) => {
@@ -82,10 +80,8 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         if (!Utils.isEmpty(addNote)) {
             addNote("", new Date(), "", (resNote) => {
                 setCurrentNote(resNote);
-                getNotes((resNotes) => {
-                    setNotes(resNotes.reverse());
-                    navigate('/notes/' + (resNote.id));
-                });
+                setNotes(current => [resNote, ...current]);
+                navigate('/notes/' + (resNote.id));
             });
         };
     };
@@ -106,7 +102,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     };
 
     /**
-     * Requete initial pour récupérer les notes && vérifie si paramsNoteId dans url
+     * Requête initiale pour récupérer les notes && vérifie si paramsNoteId dans url
      */
     useEffect(() => {
         if (!Utils.isEmpty(getNotes, getWeather)) {
@@ -138,14 +134,12 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     }, []);
 
     return (
-        <Box display={'flex'}>
+        <Box display={'flex'} height={'100vh'}>
 
             {/* LEFT BOX */}
             <Box
                 sx={{
-                    height: '100vh',
                     width: 250,
-                    bgcolor: 'var(--grey)',
                 }}
             >
                 <Box
@@ -153,6 +147,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
+                        flexWrap: 'wrap',
                         borderRight: 'solid 1px grey',
                         borderRadius: '0.5rem 0',
                         p: 1,
@@ -211,8 +206,8 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                         ))
                     )}
                 </Box>
-                {userInfo.isAccept &&
-                    (!Utils.isEmpty(userInfo.temp, userInfo.state) ?
+                {userInfo.isAccept && (
+                    !Utils.isEmpty(userInfo.temp, userInfo.state) ?
                         (
                             <Box
                                 sx={{
@@ -230,8 +225,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                             </Box>
                         ) : (
                             <Skeleton animation="wave" variant='rectangular' height={40} />
-                        ))
-                }
+                        ))}
             </Box>
             {/* END LEFT BOX */}
 
@@ -239,11 +233,13 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
             <Box
                 sx={{
                     width: '95%',
-                    bgcolor: 'var(--grey)',
                     height: '100vh',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: (Utils.objSize(notes) === 0 || Utils.isEmpty(currentNote)) && 'center',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                        border: 'none',
+                    }
                 }}
             >
                 {Utils.objSize(currentNote) !== 0 && (

@@ -26,14 +26,6 @@ const Utils = {
     decodeBase64(value) {
         return atob(value);
     },
-    convertDataURIToBinary(inputElement, onResponse = undefined) {
-        var file = inputElement.files[0];
-        var reader = new FileReader();
-        reader.onloadend = function () {
-            onResponse(reader.result);
-        }
-        reader.readAsDataURL(file);
-    },
     capitalizeFirstLetter(word) {
         return word.charAt(0).toUpperCase() + word.slice(1)
     },
@@ -41,7 +33,7 @@ const Utils = {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
     waitBeforeReload(time = 1000) {
-        return setTimeout(() => { window.location.reload(); }, time);
+        return setTimeout(() => { window.location.reload() }, time);
     },
     async getUserInfo() {
         return new Promise(async (resolve, reject) => {
