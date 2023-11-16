@@ -25,7 +25,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     /**
      * Fonction pour afficher la note cliquée
      * @param {Number} index 
-     */
+    */
     const handleClickNote = (index) => {
         navigate('/notes/' + (index));
         if (!Utils.isEmpty(getSpecificNote)) {
@@ -46,7 +46,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
      * Fonction pour modifier une note 
      * @param {String} title 
      * @param {String} content 
-     */
+    */
     const handleChangeUpdateNote = (title, content) => {
         if (!Utils.isEmpty(updateNote, addNote)) {
             if (Utils.isEmpty(notes)) {
@@ -75,7 +75,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
 
     /**
      * Fonction pour ajouter une note 
-     */
+    */
     const handleClickAddNote = () => {
         if (!Utils.isEmpty(addNote)) {
             addNote("", new Date(), "", (resNote) => {
@@ -89,7 +89,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     /**
      * Fonction pour supprimer une note
      * @param {Number} noteId 
-     */
+    */
     const handleClickDeleteNote = (noteId) => {
         if (!Utils.isEmpty(deleteNote)) {
             deleteNote(noteId, () => {
@@ -103,7 +103,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
 
     /**
      * Requête initiale pour récupérer les notes && vérifie si paramsNoteId dans url
-     */
+    */
     useEffect(() => {
         if (!Utils.isEmpty(getNotes, getWeather)) {
             // Récupère les notes
