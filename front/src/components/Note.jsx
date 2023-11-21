@@ -86,7 +86,6 @@ export default function Note({ currentNote, onChangeNote }) {
                 name='content'
                 type='text'
                 multiline
-                maxRows={2}
                 autoComplete='off'
                 inputProps={{
                     style: {
