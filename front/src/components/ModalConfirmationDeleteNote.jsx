@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import { DialogContent, DialogContentText, IconButton } from '@mui/material';
+import { DialogContent, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function AlertDialogSlide({ onClick }) {

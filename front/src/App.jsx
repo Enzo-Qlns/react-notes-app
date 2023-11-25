@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -22,7 +22,6 @@ import './views/animations.css';
 */
 
 export default function App() {
-  const [theme, setTheme] = useState('dark');
 
   /**
    * @param {funcAs200Callback} funcAs200 
@@ -203,7 +202,7 @@ export default function App() {
         </Routes>
       </BrowserRouter>
 
-      <SwitchThemeMode onCheck={(a) => { a ? setTheme('dark') : setTheme('light') }} />
+      <SwitchThemeMode />
       <ToastContainer theme='dark' />
     </ThemeProvider>
   );

@@ -219,6 +219,7 @@ function ModalUser({ profileData }) {
                                 }}
                                 target='_blank'
                                 onClick={handleClose}
+                                rel="noreferrer"
                             >
                                 {profileData.mail}
                             </a>
