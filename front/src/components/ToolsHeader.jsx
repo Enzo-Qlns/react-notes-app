@@ -113,7 +113,6 @@ function MenuShare() {
                         cursor: 'pointer',
                     }}
                     variant="body2"
-                    // color={'secondary'}
                     onClick={() => {
                         navigator.clipboard.writeText(window.location.href);
                         toast.success('Lien copié !', { position: 'bottom-right' });

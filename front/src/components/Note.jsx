@@ -96,6 +96,7 @@ export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSu
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     mr: 2,
+                    cursor: 'text'
                 }}
             >
                 <TextField

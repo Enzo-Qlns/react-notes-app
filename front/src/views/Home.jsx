@@ -225,7 +225,6 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                     "& .MuiOutlinedInput-notchedOutline": {
                         border: 'none',
                     },
-                    cursor: 'text'
                 }}
                 onClick={notes.length === 0 ? fecthAddNote : null}
             >

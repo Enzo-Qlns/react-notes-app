@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Home from './views/Home';
 import Utils from './utils/Utils';
 import Http from './utils/Http';
+import SwitchThemeMode from './components/SwitchThemeMode';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './views/animations.css';
@@ -21,6 +22,7 @@ import './views/animations.css';
 */
 
 export default function App() {
+  const [theme, setTheme] = useState('dark');
 
   /**
    * @param {funcAs200Callback} funcAs200 
@@ -146,7 +148,7 @@ export default function App() {
   const darkTheme = createTheme({
     palette: {
       mode: 'dark',
-      background: 'var(--grey)'
+      background: 'var(--grey-dark)',
     },
   });
 
@@ -182,6 +184,7 @@ export default function App() {
         </Routes>
       </BrowserRouter>
 
+      <SwitchThemeMode onCheck={(a) => { a ? setTheme('dark') : setTheme('light') }} />
       <ToastContainer theme='dark' />
     </ThemeProvider>
   );
