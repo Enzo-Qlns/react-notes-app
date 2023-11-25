@@ -53,7 +53,7 @@ const Http = {
     request_add_note(title, content, updated, onResponse = undefined) {
         const options = this.defaultOptions();
         options.method = 'POST';
-        options.body = JSON.stringify({ "title": title, "content": content, "pin": false, "checked": true, "updated": updated, "createdAt": new Date() });
+        options.body = JSON.stringify({ "title": title, "content": content, "pin": false, "checked": false, "updated": updated, "createdAt": new Date() });
         return this.call(Vars.getHost() + '/notes/', options, onResponse);
     },
 

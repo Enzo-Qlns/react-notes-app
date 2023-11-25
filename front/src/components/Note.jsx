@@ -65,7 +65,7 @@ export default function Note({ currentNote, notes, profileData, noteIsPin, noteI
         const delayEntryUser = setTimeout(() => {
             if (isTyping) {
                 if (!Utils.isEmpty(currentTitle) || !Utils.isEmpty(currentContent)) {
-                    onChangeNote(currentTitle, currentContent, noteIsPin);
+                    onChangeNote(currentTitle, currentContent, noteIsPin, noteIdChecked);
                     setIsTyping(false);
                 };
             };
