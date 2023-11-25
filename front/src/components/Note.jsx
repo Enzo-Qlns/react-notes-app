@@ -45,7 +45,7 @@ export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSu
             return elt.title.toLowerCase() === value.toLowerCase() ||
                 elt.content.toLowerCase() === value.toLowerCase()
         })[0];
-        if (noteFound) {
+        if (noteFound && !Utils.isEmpty(value)) {
             onSubmitSearchbar(noteFound.id);
         };
     };
@@ -65,7 +65,7 @@ export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSu
         const delayEntryUser = setTimeout(() => {
             if (isTyping) {
                 if (!Utils.isEmpty(currentTitle) || !Utils.isEmpty(currentContent)) {
-                    onChangeNote(currentTitle, currentContent);
+                    onChangeNote(currentTitle, currentContent, noteIsPin);
                     setIsTyping(false);
                 };
             };

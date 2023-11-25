@@ -2,25 +2,25 @@
   "notes": [
     {
       "title": "Note 1",
-      "content": " ",
+      "content": "",
       "pin": true,
-      "updated": "2023-11-25T17:21:26.283Z",
-      "createdAt": "2023-11-25T16:24:31.248Z",
+      "updated": "2023-11-25T18:08:51.699Z",
+      "createdAt": "2023-11-25T17:43:56.718Z",
       "id": 1
     },
     {
-      "title": "",
+      "title": "Note 2",
       "content": "",
       "pin": false,
-      "updated": "2023-11-25T17:06:13.939Z",
+      "updated": "2023-11-25T17:49:42.192Z",
       "createdAt": "2023-11-25T17:06:13.939Z",
       "id": 2
     },
     {
       "title": "Note 3",
-      "pin": false,
       "content": "je suis une note 3",
-      "updated": "2023-11-25T17:28:54.851Z",
+      "pin": false,
+      "updated": "2023-11-25T18:11:53.659Z",
       "createdAt": "2023-11-25T17:18:14.418Z",
       "id": 3
     }

@@ -28,7 +28,6 @@ export default function AlertDialogSlide({ onClick }) {
                 component={'form'}
                 onSubmit={(e) => {
                     e.preventDefault();
-                    console.log("ok")
                     onClick();
                     handleClose();
                 }}

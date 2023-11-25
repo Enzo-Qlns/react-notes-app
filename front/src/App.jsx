@@ -84,13 +84,14 @@ export default function App() {
    * @param {Number} index 
    * @param {String} title 
    * @param {String} content 
+   * @param {Boolean} pin 
    * @param {Date} updated 
    * @param {Date} created 
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
   */
-  const update_note = (index, title, content, updated, createdAt, funcAs200, funcAsErr) => {
-    Http.request_update_note(index, title, content, updated, createdAt, (statusCode, jsonBody) => {
+  const update_note = (index, title, content, pin, updated, createdAt, funcAs200, funcAsErr) => {
+    Http.request_update_note(index, title, content, pin, updated, createdAt, (statusCode, jsonBody) => {
       if (statusCode === 200) {
         if (!Utils.isEmpty(funcAs200)) {
           funcAs200(jsonBody);
@@ -110,61 +111,6 @@ export default function App() {
   */
   const delete_note = (index, funcAs200, funcAsErr) => {
     Http.request_delete_note(index, (statusCode, jsonBody) => {
-      if (statusCode === 200) {
-        if (!Utils.isEmpty(funcAs200)) {
-          funcAs200(jsonBody);
-        }
-      } else {
-        if (!Utils.isEmpty(funcAsErr)) {
-          funcAsErr(jsonBody, statusCode);
-        }
-      }
-    });
-  };
-
-  /**
-   * @param {funcAs200Callback} funcAs200 
-   * @param {funcAsErrCallback} funcAsErr 
-  */
-  const get_pin = (funcAs200, funcAsErr) => {
-    Http.request_get_pin((statusCode, jsonBody) => {
-      if (statusCode === 200) {
-        if (!Utils.isEmpty(funcAs200)) {
-          funcAs200(jsonBody);
-        }
-      } else {
-        if (!Utils.isEmpty(funcAsErr)) {
-          funcAsErr(jsonBody, statusCode);
-        }
-      }
-    });
-  };
-
-  /**
-   * @param {String} noteId 
-  */
-  const add_pin = (noteId, funcAs200, funcAsErr) => {
-    Http.request_add_pin(noteId, (statusCode, jsonBody) => {
-      if (statusCode === 200 || statusCode === 201) {
-        if (!Utils.isEmpty(funcAs200)) {
-          funcAs200(jsonBody);
-        }
-      } else {
-        if (!Utils.isEmpty(funcAsErr)) {
-          funcAsErr(jsonBody, statusCode);
-        }
-      }
-    });
-  };
-
-
-  /**
-   * @param {Number} index
-   * @param {funcAs200Callback} funcAs200 
-   * @param {funcAsErrCallback} funcAsErr 
-  */
-  const delete_pin = (index, funcAs200, funcAsErr) => {
-    Http.request_delete_pin(index, (statusCode, jsonBody) => {
       if (statusCode === 200) {
         if (!Utils.isEmpty(funcAs200)) {
           funcAs200(jsonBody);
@@ -229,9 +175,6 @@ export default function App() {
                 addNote={add_note}
                 updateNote={update_note}
                 getWeather={get_weather}
-                getPin={get_pin}
-                addPin={add_pin}
-                deletePin={delete_pin}
               />
             }
           />

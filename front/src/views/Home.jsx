@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
@@ -10,7 +10,7 @@ import Utils from '../utils/Utils';
 import Note from '../components/Note';
 import { toast } from 'react-toastify';
 
-export default function Home({ getNotes, updateNote, addNote, deleteNote, getWeather, getPin, addPin, deletePin }) {
+export default function Home({ getNotes, updateNote, addNote, deleteNote, getWeather }) {
     const [notes, setNotes] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
     const [userInfo, setUserInfo] = useState({
@@ -25,12 +25,16 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
 
     /**
      * Fonction pour récupérer les notes
-     */
+    */
     const fetchNote = () => {
         if (!Utils.isEmpty(getNotes, addNote)) {
             getNotes((notes) => {
                 setIsLoadingRequest(false);
-                const notesSorted = notes.sort(function (a, b) { return new Date(b.updated) - new Date(a.updated) });
+                const notesSorted = notes.sort((a, b) => {
+                    if (a.pin && !b.pin) return -1;
+                    if (!a.pin && b.pin) return 1;
+                    return new Date(b.updated) - new Date(a.updated);
+                });
                 setNotes(notesSorted);
                 if (!Utils.isEmpty(notesSorted) && Utils.isEmpty(paramsNoteId)) {
                     navigate('/notes/' + notesSorted[0].id);
@@ -44,9 +48,9 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     */
     const fecthAddNote = () => {
         if (!Utils.isEmpty(addNote)) {
-            addNote("", "", new Date(), (resNote) => {
-                setNotes(current => [resNote, ...current]);
-                navigate('/notes/' + (resNote.id));
+            addNote("", "", new Date(), (res) => {
+                setNotes(current => [res, ...current]);
+                navigate('/notes/' + (res.id));
             });
         };
     };
@@ -58,7 +62,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     */
     const fetchUpdateNote = (title, content, pin) => {
         if (!Utils.isEmpty(updateNote, addNote, pin)) {
-            updateNote(paramsNoteId, title.toString(), content.toString(), new Date(), notes.find(elt => paramsNoteId === elt.id).createdAt, pin, () => {
+            updateNote(paramsNoteId, title.toString(), content.toString(), pin, new Date(), notes.find(elt => paramsNoteId === elt.id).createdAt, () => {
                 setIsSaving(true);
                 fetchNote();
                 setTimeout(() => {
@@ -66,6 +70,21 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                 }, 1000);
             });
         };
+    };
+
+    const fetchDeleteNote = () => {
+        deleteNote(paramsNoteId, () => {
+            getNotes((notes) => {
+                toast.success('Note supprimée avec succès', { position: 'bottom-right' })
+                const notesSorted = notes.sort((a, b) => {
+                    if (a.pin && !b.pin) return -1;
+                    if (!a.pin && b.pin) return 1;
+                    return new Date(b.updated) - new Date(a.updated);
+                });
+                setNotes(notesSorted);
+                navigate('/notes/' + notesSorted[0].id);
+            });
+        });
     };
 
     /**
@@ -230,18 +249,11 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                                 notes={notes}
                                 noteIsPin={notes.find(elt => elt.id === paramsNoteId).pin}
                                 onSubmitSearchbar={id => navigate('/notes/' + id)}
-                                onClickDelete={() => {
-                                    deleteNote(paramsNoteId, () => {
-                                        fetchNote();
-                                        toast.success('Note supprimée avec succès', { position: 'bottom-right' })
-                                    });
-                                }}
+                                onClickDelete={fetchDeleteNote}
                                 onClickPin={(pin) => {
-                                    // if (pin) {
-                                    //     addPin(paramsNoteId);
-                                    // } else {
-                                    //     deletePin(notes.find(elt => elt.id === paramsNoteId).id);
-                                    // };
+                                    let title = notes.find(elt => elt.id === paramsNoteId).title;
+                                    let content = notes.find(elt => elt.id === paramsNoteId).content;
+                                    fetchUpdateNote(title, content, pin);
                                 }}
                             />
                             {isSaving && (
