@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Pagination, Skeleton, Tooltip, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
@@ -22,10 +22,12 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     const params = useParams();
     const paramsNoteId = Number.parseInt(params.noteId);
     const [isLoadingRequest, setIsLoadingRequest] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const notesPerPage = 5; // Nombre de notes à afficher par page
 
     /**
      * Fonction pour récupérer les notes
-    */
+     */
     const fetchNote = () => {
         if (!Utils.isEmpty(getNotes, addNote)) {
             getNotes((notes) => {
@@ -43,9 +45,13 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
         };
     };
 
+    useEffect(() => {
+        fetchNote();
+    }, [currentPage]);
+
     /**
-     * Fonction pour ajouter une note 
-    */
+     * Fonction pour ajouter une note
+     */
     const fecthAddNote = () => {
         if (!Utils.isEmpty(addNote)) {
             addNote("", "", new Date(), (res) => {
@@ -56,10 +62,10 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     };
 
     /**
-     * Fonction pour modifier une note 
-     * @param {String} title 
-     * @param {String} content 
-    */
+     * Fonction pour modifier une note
+     * @param {String} title
+     * @param {String} content
+     */
     const fetchUpdateNote = (title, content, pin) => {
         if (!Utils.isEmpty(updateNote, addNote, pin)) {
             updateNote(paramsNoteId, title.toString(), content.toString(), pin, new Date(), notes.find(elt => paramsNoteId === elt.id).createdAt, () => {
@@ -89,10 +95,9 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
 
     /**
      * Requête initiale pour récupérer les notes && vérifie si paramsNoteId dans url
-    */
+     */
     useEffect(() => {
         setIsLoadingRequest(true);
-        fetchNote();
 
         if (!Utils.isEmpty(getWeather)) {
             // Récupère la ville et la météo de l'utilisateur
@@ -107,6 +112,10 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
             });
         };
     }, []);
+
+    const indexOfLastNote = currentPage * notesPerPage;
+    const indexOfFirstNote = indexOfLastNote - notesPerPage;
+    const currentNotes = notes.slice(indexOfFirstNote, indexOfLastNote);
 
     return (
         <Box display={'flex'} height={'100vh'}>
@@ -145,7 +154,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                             Chargement
                             <CircularProgress sx={{ ml: 2 }} size={20} />
                         </Typography>
-                        : Utils.isEmpty(notes)
+                        : Utils.isEmpty(currentNotes)
                             ? <Box
                                 sx={{
                                     display: 'flex',
@@ -158,7 +167,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                             </Box>
                             :
                             <>
-                                {notes.map(note => (
+                                {currentNotes.map(note => (
                                     <Card
                                         key={note.id}
                                         variant={paramsNoteId === note.id ? 'outlined' : 'elevation'}
@@ -189,27 +198,15 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                             </>
                     }
                 </Box>
-                {userInfo.isAccept && (
-                    !Utils.isEmpty(userInfo.temp, userInfo.state) ?
-                        (
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                }}
-                                className='fade-in'
-                            >
-                                <PlaceIcon />
-                                <Tooltip title={userInfo.state} placement='top' sx={{ cursor: userInfo.state.split('-').length > 1 && 'help' }}>
-                                    <Typography width={100} variant='subtitle1' mr={1}>{userInfo.state.split('-').length > 1 ? userInfo.state.split('-')[0] + '-...' : userInfo.state}</Typography>
-                                </Tooltip>
-                                <ThermostatIcon />
-                                <Typography variant='subtitle1'>{userInfo.temp}°C</Typography>
-                            </Box>
-                        ) : (
-                            <Skeleton animation="wave" variant='rectangular' height={40} />
-                        ))}
+                <Pagination
+                    count={Math.ceil(notes.length / notesPerPage)}
+                    shape="rounded"
+                    page={currentPage}
+                    onChange={(event, value) => setCurrentPage(value)}
+                    size='small'
+                    hidePrevButton
+                    hideNextButton
+                />
             </Box>
             {/* END LEFT BOX */}
 
