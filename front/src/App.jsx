@@ -92,8 +92,8 @@ export default function App() {
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
   */
-  const update_note = (index, title, content, pin, updated, createdAt, funcAs200, funcAsErr) => {
-    Http.request_update_note(index, title, content, pin, updated, createdAt, (statusCode, jsonBody) => {
+  const update_note = (index, title, content, pin, checked, updated, createdAt, funcAs200, funcAsErr) => {
+    Http.request_update_note(index, title, content, pin, checked, updated, createdAt, (statusCode, jsonBody) => {
       if (statusCode === 200) {
         if (!Utils.isEmpty(funcAs200)) {
           funcAs200(jsonBody);

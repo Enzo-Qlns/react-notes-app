@@ -68,9 +68,9 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
      * @param {String} title
      * @param {String} content
      */
-    const fetchUpdateNote = (title, content, pin) => {
-        if (!Utils.isEmpty(updateNote, addNote, pin)) {
-            updateNote(paramsNoteId, title.toString(), content.toString(), pin, new Date(), notes.find(elt => paramsNoteId === elt.id).createdAt, () => {
+    const fetchUpdateNote = (title, content, pin, checked) => {
+        if (!Utils.isEmpty(updateNote, addNote, pin, checked)) {
+            updateNote(paramsNoteId, title.toString(), content.toString(), pin, checked, new Date(), notes.find(elt => paramsNoteId === elt.id).createdAt, () => {
                 setIsSaving(true);
                 fetchNote();
                 setTimeout(() => {
@@ -259,12 +259,20 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                                 onChangeNote={fetchUpdateNote}
                                 notes={notes}
                                 noteIsPin={notes.find(elt => elt.id === paramsNoteId).pin}
+                                noteIdChecked={notes.find(elt => elt.id === paramsNoteId).checked}
                                 onSubmitSearchbar={id => navigate('/notes/' + id)}
                                 onClickDelete={fetchDeleteNote}
                                 onClickPin={(pin) => {
                                     let title = notes.find(elt => elt.id === paramsNoteId).title;
                                     let content = notes.find(elt => elt.id === paramsNoteId).content;
-                                    fetchUpdateNote(title, content, pin);
+                                    let checked = notes.find(elt => elt.id === paramsNoteId).checked;
+                                    fetchUpdateNote(title, content, pin, checked);
+                                }}
+                                onChangeCheckedDone={(checked) => {
+                                    let title = notes.find(elt => elt.id === paramsNoteId).title;
+                                    let content = notes.find(elt => elt.id === paramsNoteId).content;
+                                    let pin = notes.find(elt => elt.id === paramsNoteId).pin;
+                                    fetchUpdateNote(title, content, pin, checked);
                                 }}
                                 profileData={profileData}
                             />

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Utils from "../utils/Utils";
 import ToolsHeader from '../components/ToolsHeader';
 
-export default function Note({ currentNote, notes, profileData, noteIsPin, onChangeNote, onSubmitSearchbar, onClickDelete, onClickPin }) {
+export default function Note({ currentNote, notes, profileData, noteIsPin, noteIdChecked, onChangeNote, onSubmitSearchbar, onClickDelete, onClickPin, onChangeCheckedDone }) {
     const [currentTitle, setCurrentTitle] = useState('');
     const [currentContent, setCurrentContent] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -87,8 +87,10 @@ export default function Note({ currentNote, notes, profileData, noteIsPin, onCha
             <ToolsHeader
                 noteIsPin={noteIsPin}
                 profileData={profileData}
+                noteIdChecked={noteIdChecked}
                 onClickDelete={onClickDelete}
                 onClickPin={onClickPin}
+                onChangeCheckedDone={onChangeCheckedDone}
                 onSubmitSearchbar={handleSubmitSearchbar}
             />
             <Box

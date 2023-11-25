@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import { Avatar, Icon, IconButton, Modal, Tooltip } from '@mui/material';
+import { Avatar, Checkbox, FormControlLabel, IconButton, Modal } from '@mui/material';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import ModalConfirmationDeleteNote from './ModalConfirmationDeleteNote';
 import Paper from '@mui/material/Paper';
@@ -16,12 +16,17 @@ import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import Utils from '../utils/Utils';
 
-export default function ToolsHeader({ noteIsPin, profileData, onClickPin, onClickDelete, onSubmitSearchbar }) {
+export default function ToolsHeader({ noteIsPin, profileData, noteIdChecked, onChangeCheckedDone, onClickPin, onClickDelete, onSubmitSearchbar }) {
     const [isPinActive, setIsPinActive] = useState(noteIsPin);
+    const [isCheckedActive, setIsCheckedActive] = useState(noteIdChecked);
 
     useEffect(() => {
         setIsPinActive(noteIsPin);
     }, [noteIsPin]);
+
+    useEffect(() => {
+        setIsCheckedActive(noteIdChecked);
+    }, [noteIdChecked]);
 
     return (
         <Box
@@ -34,7 +39,12 @@ export default function ToolsHeader({ noteIsPin, profileData, onClickPin, onClic
                 justifyContent: 'space-between',
             }}
         >
-            <Box display='flex'>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                }}
+            >
                 <IconButton
                     onClick={() => {
                         onClickPin(!isPinActive);
@@ -44,6 +54,20 @@ export default function ToolsHeader({ noteIsPin, profileData, onClickPin, onClic
                     {isPinActive ? <PushPinIcon fontSize='small' /> : <PushPinOutlinedIcon fontSize='small' />}
                 </IconButton>
                 <ModalConfirmationDeleteNote onClick={onClickDelete} />
+                <FormControlLabel
+                    sx={{ mx: 0 }}
+                    control={
+                        <Checkbox
+                            checked={isCheckedActive}
+                            onChange={(_, v) => {
+                                onChangeCheckedDone(v);
+                                setIsCheckedActive(v)
+                            }}
+                            size='small'
+                        />
+                    }
+                    label="Réalisée"
+                />
             </Box>
             <Box
                 sx={{
