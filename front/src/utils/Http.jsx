@@ -70,6 +70,11 @@ const Http = {
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 
+    request_get_profile(onResponse = undefined) {
+        const options = this.defaultOptions();
+        return this.call(Vars.getHost() + '/profile', options, onResponse);
+    },
+
     request_get_weather(lat, long, onResponse = undefined) {
         const options = this.defaultOptions();
         return this.call("https://api.weatherapi.com/v1/current.json?key=" + Vars.getApiKeyWeather() + "&q=" + lat + "," + long, options, onResponse);

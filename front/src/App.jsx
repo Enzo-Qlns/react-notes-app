@@ -145,6 +145,24 @@ export default function App() {
     });
   };
 
+  /**
+   * @param {funcAs200Callback} funcAs200 
+   * @param {funcAsErrCallback} funcAsErr 
+  */
+  const get_profile = (funcAs200, funcAsErr) => {
+    Http.request_get_profile((statusCode, jsonBody) => {
+      if (statusCode === 200) {
+        if (!Utils.isEmpty(funcAs200)) {
+          funcAs200(jsonBody);
+        }
+      } else {
+        if (!Utils.isEmpty(funcAsErr)) {
+          funcAsErr(jsonBody, statusCode);
+        }
+      };
+    });
+  };
+
   const darkTheme = createTheme({
     palette: {
       mode: 'dark',
@@ -177,6 +195,7 @@ export default function App() {
                 addNote={add_note}
                 updateNote={update_note}
                 getWeather={get_weather}
+                getProfile={get_profile}
               />
             }
           />

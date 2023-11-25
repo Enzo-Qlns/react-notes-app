@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import { IconButton } from '@mui/material';
+import { Avatar, Icon, IconButton, Modal, Tooltip } from '@mui/material';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import ModalConfirmationDeleteNote from './ModalConfirmationDeleteNote';
 import Paper from '@mui/material/Paper';
@@ -11,8 +11,12 @@ import IosShareIcon from '@mui/icons-material/IosShare';
 import Menu from '@mui/material/Menu';
 import { toast } from 'react-toastify';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
+import Backdrop from '@mui/material/Backdrop';
+import Fade from '@mui/material/Fade';
+import Typography from '@mui/material/Typography';
+import Utils from '../utils/Utils';
 
-export default function ToolsHeader({ noteIsPin, onClickPin, onClickDelete, onSubmitSearchbar }) {
+export default function ToolsHeader({ noteIsPin, profileData, onClickPin, onClickDelete, onSubmitSearchbar }) {
     const [isPinActive, setIsPinActive] = useState(noteIsPin);
 
     useEffect(() => {
@@ -30,7 +34,7 @@ export default function ToolsHeader({ noteIsPin, onClickPin, onClickDelete, onSu
                 justifyContent: 'space-between',
             }}
         >
-            <div style={{ display: 'flex' }}>
+            <Box display='flex'>
                 <IconButton
                     onClick={() => {
                         onClickPin(!isPinActive);
@@ -40,10 +44,16 @@ export default function ToolsHeader({ noteIsPin, onClickPin, onClickDelete, onSu
                     {isPinActive ? <PushPinIcon fontSize='small' /> : <PushPinOutlinedIcon fontSize='small' />}
                 </IconButton>
                 <ModalConfirmationDeleteNote onClick={onClickDelete} />
-            </div>
-            <div>
+            </Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                }}
+            >
                 <SearchNoteBar onSubmitSearchbar={(value) => onSubmitSearchbar(value)} />
-            </div>
+                <ModalUser profileData={profileData} />
+            </Box>
         </Box>
     );
 }
@@ -125,5 +135,72 @@ function MenuShare() {
                 </Link>
             </Menu>
         </>
+    );
+}
+
+function ModalUser({ profileData }) {
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    if (Utils.isEmpty(profileData)) {
+        return;
+    };
+
+    return (
+        <div>
+            <IconButton onClick={handleOpen} sx={{ p: 0, mx: 1 }}>
+                <Avatar alt={profileData.firstname.toUpperCase()} />
+            </IconButton>
+            <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                open={open}
+                onClose={handleClose}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                    backdrop: {
+                        timeout: 500,
+                    },
+                }}
+            >
+                <Fade in={open}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            bgcolor: 'background.paper',
+                            border: '2px solid #000',
+                            boxShadow: 24,
+                            p: 4,
+                        }}
+                    >
+                        <Typography id="transition-modal-title" variant="h6" component="h2">
+                            Bonjour {Utils.capitalizeFirstLetter(profileData.firstname) + ' ' + profileData.lastname.toUpperCase()}
+                        </Typography>
+                        <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+                            <span style={{ fontWeight: 'bold' }}>
+                                Votre e-mail&nbsp;:&nbsp;
+                            </span>
+                            <a
+                                href={`mailto:${profileData.mail}?subject = Feedback&body = Message`}
+                                style={{
+                                    textDecoration: 'none',
+                                    color: '#fff'
+                                }}
+                                target='_blank'
+                                onClick={handleClose}
+                            >
+                                {profileData.mail}
+                            </a>
+                        </Typography>
+                    </Box>
+                </Fade>
+            </Modal>
+        </div>
     );
 }

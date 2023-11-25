@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Utils from "../utils/Utils";
 import ToolsHeader from '../components/ToolsHeader';
 
-export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSubmitSearchbar, onClickDelete, onClickPin }) {
+export default function Note({ currentNote, notes, profileData, noteIsPin, onChangeNote, onSubmitSearchbar, onClickDelete, onClickPin }) {
     const [currentTitle, setCurrentTitle] = useState('');
     const [currentContent, setCurrentContent] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -86,6 +86,7 @@ export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSu
         <div className="fade-in">
             <ToolsHeader
                 noteIsPin={noteIsPin}
+                profileData={profileData}
                 onClickDelete={onClickDelete}
                 onClickPin={onClickPin}
                 onSubmitSearchbar={handleSubmitSearchbar}
@@ -96,7 +97,6 @@ export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSu
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     mr: 2,
-                    cursor: 'text'
                 }}
             >
                 <TextField

@@ -1,3 +1,26 @@
 {
-  "notes": []
+  "notes": [
+    {
+      "title": "Note 1",
+      "content": "je suis une note 1",
+      "pin": true,
+      "updated": "2023-11-25T22:05:09.925Z",
+      "createdAt": "2023-11-25T22:05:00.860Z",
+      "id": 1
+    },
+    {
+      "title": "Note 8",
+      "content": "",
+      "pin": true,
+      "updated": "2023-11-25T22:09:42.259Z",
+      "createdAt": "2023-11-25T22:07:11.834Z",
+      "id": 8
+    }
+  ],
+  "profile": {
+    "id": 1,
+    "firstname": "enzo",
+    "lastname": "quelenis",
+    "mail": "equelenis@myges.fr"
+  }
 }

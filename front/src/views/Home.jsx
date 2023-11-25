@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Pagination, Skeleton, Tooltip, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Pagination, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DateManager from '../utils/DateManager';
@@ -8,7 +8,7 @@ import Utils from '../utils/Utils';
 import Note from '../components/Note';
 import { toast } from 'react-toastify';
 
-export default function Home({ getNotes, updateNote, addNote, deleteNote, getWeather }) {
+export default function Home({ getNotes, updateNote, addNote, deleteNote, getWeather, getProfile }) {
     const [notes, setNotes] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
     const [userInfo, setUserInfo] = useState({
@@ -22,6 +22,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     const [isLoadingRequest, setIsLoadingRequest] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const notesPerPage = 9; // Nombre de notes à afficher par page
+    const [profileData, setProfileData] = useState(null);
 
     /**
      * Fonction pour récupérer les notes
@@ -43,7 +44,6 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                     const page = Math.ceil((selectedNoteIndex + 1) / notesPerPage);
                     setCurrentPage(page);
                 }
-
                 // if (!Utils.isEmpty(notesSorted) && Utils.isEmpty(paramsNoteId)) {
                 //     navigate('/notes/' + notesSorted[0].id);
                 // };
@@ -90,7 +90,10 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                     return new Date(b.updated) - new Date(a.updated);
                 });
                 setNotes(notesSorted);
-                navigate('/notes/' + notesSorted[0].id);
+                if (!Utils.isEmpty(notesSorted))
+                    navigate('/notes/' + notesSorted[0].id);
+                else
+                    navigate('/notes');
             });
         });
     };
@@ -101,7 +104,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     useEffect(() => {
         setIsLoadingRequest(true);
         fetchNote();
-        if (!Utils.isEmpty(getWeather)) {
+        if (!Utils.isEmpty(getWeather, getProfile)) {
             // Récupère la ville et la météo de l'utilisateur
             Utils.getUserInfo().then((userInfo) => {
                 getWeather(userInfo.latitude, userInfo.longitude, (res) => {
@@ -112,6 +115,8 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
             }, () => {
                 setUserInfo({ isAccept: false });
             });
+
+            getProfile((res) => setProfileData(res));
         };
     }, []);
 
@@ -199,15 +204,23 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                     }
                 </Box>
                 {Math.ceil(notes.length / notesPerPage) > 1 && (
-                    <Pagination
-                        count={Math.ceil(notes.length / notesPerPage)}
-                        shape="rounded"
-                        page={currentPage}
-                        onChange={(event, value) => setCurrentPage(value)}
-                        size='small'
-                        hidePrevButton
-                        hideNextButton
-                    />)}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            mt: 1,
+                        }}
+                    >
+                        <Pagination
+                            count={Math.ceil(notes.length / notesPerPage)}
+                            shape="rounded"
+                            page={currentPage}
+                            onChange={(event, value) => setCurrentPage(value)}
+                            size='small'
+                            hidePrevButton
+                            hideNextButton
+                        />
+                    </Box>)}
             </Box>
             {/* END LEFT BOX */}
 
@@ -223,6 +236,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                     "& .MuiOutlinedInput-notchedOutline": {
                         border: 'none',
                     },
+                    cursor: 'text',
                 }}
                 onClick={notes.length === 0 ? fecthAddNote : null}
             >
@@ -233,7 +247,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                height: '100%'
+                                height: '100%',
                             }}
                         >
                             <Typography variant="h6" color={'grey'}>Sélectionnez une note</Typography>
@@ -252,6 +266,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                                     let content = notes.find(elt => elt.id === paramsNoteId).content;
                                     fetchUpdateNote(title, content, pin);
                                 }}
+                                profileData={profileData}
                             />
                             {isSaving && (
                                 <Fade in={isSaving}>
