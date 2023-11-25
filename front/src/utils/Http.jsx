@@ -1,5 +1,6 @@
 import Utils from './Utils';
 import Vars from "./Vars";
+import { toast } from 'react-toastify';
 
 const Http = {
     //  Génération des headers
@@ -12,12 +13,11 @@ const Http = {
         const options = {};
         options.method = "GET";
         options.headers = Http.defaultHeaders();
-        if (hasJson)
-            options.headers.append("Content-Type", "application/json");
+        hasJson && options.headers.append("Content-Type", "application/json");
         return options;
     },
     handleOups(err) {
-        console.error('error', err);
+        toast.error("Une erreur est survenue !");
     },
     //  Appel web generic
     async call(url = undefined, options = this.defaultOptions(), onResponse = undefined) {
@@ -50,10 +50,10 @@ const Http = {
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 
-    request_add_note(title, updated, content, onResponse = undefined) {
+    request_add_note(title, content, updated, onResponse = undefined) {
         const options = this.defaultOptions();
         options.method = 'POST';
-        options.body = JSON.stringify({ "title": title, "updated": updated, "content": content });
+        options.body = JSON.stringify({ "title": title, "content": content, "pin": false, "updated": updated, "createdAt": new Date() });
         return this.call(Vars.getHost() + '/notes/', options, onResponse);
     },
 
@@ -63,10 +63,10 @@ const Http = {
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 
-    request_update_note(index, title, updated, content, onResponse = undefined) {
+    request_update_note(index, title, content, pin, updated, createdAt, onResponse = undefined) {
         const options = this.defaultOptions();
         options.method = 'PUT';
-        options.body = JSON.stringify({ "title": title, "updated": updated, "content": content });
+        options.body = JSON.stringify({ "title": title, "content": content, "pin": pin, "updated": updated, "createdAt": createdAt });
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 

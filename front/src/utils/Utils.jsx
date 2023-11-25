@@ -32,8 +32,8 @@ const Utils = {
     isOnPhone() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },
-    waitBeforeReload(time = 1000) {
-        return setTimeout(() => { window.location.reload() }, time);
+    changeRootCssVar(rootVar, css) {
+        return document.documentElement.style.setProperty(rootVar, css);
     },
     async getUserInfo() {
         return new Promise(async (resolve, reject) => {

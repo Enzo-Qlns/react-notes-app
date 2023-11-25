@@ -1,10 +1,11 @@
-import { Divider, TextField } from "@mui/material";
+import { Box, Divider, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import Utils from "../utils/Utils";
+import ToolsHeader from '../components/ToolsHeader';
 
-export default function Note({ currentNote, onChangeNote }) {
-    const [currentTitle, setCurrentTitle] = useState(currentNote.title);
-    const [currentContent, setCurrentContent] = useState(currentNote.content);
+export default function Note({ currentNote, notes, noteIsPin, onChangeNote, onSubmitSearchbar, onClickDelete, onClickPin }) {
+    const [currentTitle, setCurrentTitle] = useState('');
+    const [currentContent, setCurrentContent] = useState('');
     const [isTyping, setIsTyping] = useState(false);
 
     /**
@@ -36,6 +37,20 @@ export default function Note({ currentNote, onChangeNote }) {
     };
 
     /**
+     * Fonction pour rechercher une note
+     * @param {String} value 
+     */
+    const handleSubmitSearchbar = (value) => {
+        const noteFound = notes.filter(elt => {
+            return elt.title.toLowerCase() === value.toLowerCase() ||
+                elt.content.toLowerCase() === value.toLowerCase()
+        })[0];
+        if (noteFound) {
+            onSubmitSearchbar(noteFound.id);
+        };
+    };
+
+    /**
      * Permet de mettre à jour initialement les différentes valeures des inputs
      */
     useEffect(() => {
@@ -44,8 +59,8 @@ export default function Note({ currentNote, onChangeNote }) {
     }, [currentNote]);
 
     /**
-     * Permet de renvoyer les valeurs des inputs après un delay de 500ms
-     */
+     * Permet de renvoyer les valeurs des inputs après un delay de 1sec
+    */
     useEffect(() => {
         const delayEntryUser = setTimeout(() => {
             if (isTyping) {
@@ -54,30 +69,53 @@ export default function Note({ currentNote, onChangeNote }) {
                     setIsTyping(false);
                 };
             };
-        }, 500);
+        }, 1000);
 
         return () => clearTimeout(delayEntryUser)
     }, [currentTitle, currentContent]);
 
+    /**
+     * Permet de mettre les valeurs initials du titre et du contenu dans les inputs
+     */
+    useEffect(() => {
+        setCurrentTitle(currentNote.title);
+        setCurrentContent(currentNote.content);
+    }, []);
+
     return (
-        <>
-            <TextField
-                value={currentTitle}
-                placeholder='Ecrire un titre'
-                onChange={handleChangeTitle}
-                name='title'
-                type='text'
-                autoFocus
-                autoComplete='off'
-                required
-                inputProps={{
-                    style: {
-                        fontSize: '20px',
-                        border: 'none',
-                    }
-                }}
-                fullWidth
+        <div className="fade-in">
+            <ToolsHeader
+                noteIsPin={noteIsPin}
+                onClickDelete={onClickDelete}
+                onClickPin={onClickPin}
+                onSubmitSearchbar={handleSubmitSearchbar}
             />
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    mr: 2,
+                }}
+            >
+                <TextField
+                    value={currentTitle}
+                    placeholder='Ecrire un titre'
+                    onChange={handleChangeTitle}
+                    name='title'
+                    type='text'
+                    autoFocus
+                    autoComplete='off'
+                    required
+                    inputProps={{
+                        style: {
+                            fontSize: '20px',
+                            border: 'none',
+                        }
+                    }}
+                    fullWidth
+                />
+            </Box>
             <Divider sx={{ width: 200, borderRadius: '0.5rem' }} />
             <TextField
                 value={currentContent}
@@ -89,11 +127,11 @@ export default function Note({ currentNote, onChangeNote }) {
                 autoComplete='off'
                 inputProps={{
                     style: {
-                        height: '80vh',
+                        height: '75vh',
                     },
                 }}
                 fullWidth
             />
-        </>
+        </div>
     );
 }

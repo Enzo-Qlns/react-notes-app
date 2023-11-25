@@ -1,9 +1,11 @@
 :root {
   --grey: #323232;
+  --bg-tools: #252525;
 }
 
 html {
   background-color: var(--grey);
+  /* overflow: hidden; */
 }
 
 body {

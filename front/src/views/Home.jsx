@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Card, CardActionArea, CardActions, CardContent, IconButton, Skeleton, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
@@ -8,10 +8,10 @@ import PlaceIcon from '@mui/icons-material/Place';
 import DateManager from '../utils/DateManager';
 import Utils from '../utils/Utils';
 import Note from '../components/Note';
+import { toast } from 'react-toastify';
 
-export default function Home({ getNotes, updateNote, addNote, getSpecificNote, deleteNote, getWeather }) {
+export default function Home({ getNotes, updateNote, addNote, deleteNote, getWeather, getPin, addPin, deletePin }) {
     const [notes, setNotes] = useState([]);
-    const [currentNote, setCurrentNote] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
     const [userInfo, setUserInfo] = useState({
         temp: null,
@@ -20,24 +20,33 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
     });
     const navigate = useNavigate();
     const params = useParams();
-    const paramsNoteId = Number.parseInt(params.noteId) || 1;
+    const paramsNoteId = Number.parseInt(params.noteId);
+    const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
     /**
-     * Fonction pour afficher la note cliquée
-     * @param {Number} index 
+     * Fonction pour récupérer les notes
+     */
+    const fetchNote = () => {
+        if (!Utils.isEmpty(getNotes, addNote)) {
+            getNotes((notes) => {
+                setIsLoadingRequest(false);
+                const notesSorted = notes.sort(function (a, b) { return new Date(b.updated) - new Date(a.updated) });
+                setNotes(notesSorted);
+                if (!Utils.isEmpty(notesSorted) && Utils.isEmpty(paramsNoteId)) {
+                    navigate('/notes/' + notesSorted[0].id);
+                };
+            });
+        };
+    };
+
+    /**
+     * Fonction pour ajouter une note 
     */
-    const handleClickNote = (index) => {
-        navigate('/notes/' + (index));
-        if (!Utils.isEmpty(getSpecificNote)) {
-            getSpecificNote(index, (res) => {
-                const updatedNote = notes.map((elt) => {
-                    if (elt.id === index) {
-                        return res;
-                    }
-                    return elt;
-                });
-                setNotes(updatedNote);
-                setCurrentNote(res);
+    const fecthAddNote = () => {
+        if (!Utils.isEmpty(addNote)) {
+            addNote("", "", new Date(), (resNote) => {
+                setNotes(current => [resNote, ...current]);
+                navigate('/notes/' + (resNote.id));
             });
         };
     };
@@ -47,56 +56,14 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
      * @param {String} title 
      * @param {String} content 
     */
-    const handleChangeUpdateNote = (title, content) => {
-        if (!Utils.isEmpty(updateNote, addNote)) {
-            if (Utils.isEmpty(notes)) {
-                addNote(title, new Date(), content, (resNote) => {
-                    setCurrentNote(resNote);
-                    setNotes(current => [resNote, ...current]);
-                });
-            } else {
-                updateNote(paramsNoteId, title.toString(), new Date(), content.toString(), (res) => {
-                    const updatedNote = notes.map((elt) => {
-                        if (elt.id === paramsNoteId) {
-                            return res;
-                        }
-                        return elt;
-                    });
-                    setIsSaving(true);
-                    setNotes(updatedNote);
-                    setCurrentNote(res);
-                    setTimeout(() => {
-                        setIsSaving(false);
-                    }, 1000);
-                });
-            };
-        };
-    };
-
-    /**
-     * Fonction pour ajouter une note 
-    */
-    const handleClickAddNote = () => {
-        if (!Utils.isEmpty(addNote)) {
-            addNote("", new Date(), "", (resNote) => {
-                setCurrentNote(resNote);
-                setNotes(current => [resNote, ...current]);
-                navigate('/notes/' + (resNote.id));
-            });
-        };
-    };
-
-    /**
-     * Fonction pour supprimer une note
-     * @param {Number} noteId 
-    */
-    const handleClickDeleteNote = (noteId) => {
-        if (!Utils.isEmpty(deleteNote)) {
-            deleteNote(noteId, () => {
-                let updatedNotes = notes.filter(a => a.id !== noteId);
-                setNotes(updatedNotes);
-                setCurrentNote(updatedNotes[0]);
-                navigate('/notes/' + (paramsNoteId - 1));
+    const fetchUpdateNote = (title, content, pin) => {
+        if (!Utils.isEmpty(updateNote, addNote, pin)) {
+            updateNote(paramsNoteId, title.toString(), content.toString(), new Date(), notes.find(elt => paramsNoteId === elt.id).createdAt, pin, () => {
+                setIsSaving(true);
+                fetchNote();
+                setTimeout(() => {
+                    setIsSaving(false);
+                }, 1000);
             });
         };
     };
@@ -105,23 +72,10 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
      * Requête initiale pour récupérer les notes && vérifie si paramsNoteId dans url
     */
     useEffect(() => {
-        if (!Utils.isEmpty(getNotes, getWeather)) {
-            // Récupère les notes
-            getNotes((notes) => {
-                if (Utils.isEmpty(notes)) {
-                    let newObj = { "title": "", "content": "", "updated": new Date() };
-                    setCurrentNote(newObj);
-                } else {
-                    let currentNote = notes.filter(elt => elt.id === paramsNoteId)[0];
-                    setNotes(notes.reverse());
-                    if (!Utils.isEmpty(notes) && Utils.isEmpty(params.noteId)) {
-                        setCurrentNote(notes[0]);
-                        navigate('/notes/' + notes[0].id);
-                    } else {
-                        setCurrentNote(currentNote);
-                    };
-                };
-            });
+        setIsLoadingRequest(true);
+        fetchNote();
+
+        if (!Utils.isEmpty(getWeather)) {
             // Récupère la ville et la météo de l'utilisateur
             Utils.getUserInfo().then((userInfo) => {
                 getWeather(userInfo.latitude, userInfo.longitude, (res) => {
@@ -139,11 +93,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
         <Box display={'flex'} height={'100vh'}>
 
             {/* LEFT BOX */}
-            <Box
-                sx={{
-                    width: 250,
-                }}
-            >
+            <Box sx={{ width: 250 }}>
                 <Box
                     sx={{
                         display: 'flex',
@@ -158,7 +108,7 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                     <Typography variant='h5' textAlign={'center'}>
                         Vos Notes
                     </Typography>
-                    <IconButton onClick={handleClickAddNote}>
+                    <IconButton onClick={fecthAddNote}>
                         <AddCircleOutlineIcon />
                     </IconButton>
                 </Box>
@@ -171,42 +121,54 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                         borderRadius: '0 0.5rem 0 0',
                     }}
                 >
-                    {!Utils.isEmpty(notes) && (
-                        notes.map((note, index) => (
-                            <Card
-                                key={index}
-                                variant={paramsNoteId === note.id ? 'outlined' : 'elevation'}
+                    {isLoadingRequest
+                        ? <Typography textAlign={'center'} mt={2}>
+                            Chargement
+                            <CircularProgress sx={{ ml: 2 }} size={20} />
+                        </Typography>
+                        : Utils.isEmpty(notes)
+                            ? <Box
                                 sx={{
-                                    mt: 2,
-                                    cursor: paramsNoteId !== note.id && 'pointer',
-                                    '&:hover': {
-                                        bgcolor: paramsNoteId !== note.id && 'var(--grey)',
-                                    },
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: '100%'
                                 }}
-                                className='fade-in'
                             >
-                                <CardActionArea
-                                    onClick={() => handleClickNote(note.id)}
-                                    disabled={paramsNoteId === note.id}
-                                >
-                                    <CardContent>
-                                        <Typography variant='h6' gutterBottom>
-                                            {note.title}
-                                        </Typography>
-                                        <Typography color='text.secondary' fontSize={'11px'} variant='caption' gutterBottom>
-                                            {DateManager.convertDate(note.updated)}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                                {paramsNoteId === note.id && (
-                                    <CardActions onClick={() => handleClickDeleteNote(note.id)}>
-                                        <Button size="small" color="primary">
-                                            Supprimer
-                                        </Button>
-                                    </CardActions>)}
-                            </Card>
-                        ))
-                    )}
+                                <Typography variant="h6" color={'grey'}>Aucune note</Typography>
+                            </Box>
+                            :
+                            <>
+                                {notes.map(note => (
+                                    <Card
+                                        key={note.id}
+                                        variant={paramsNoteId === note.id ? 'outlined' : 'elevation'}
+                                        sx={{
+                                            mt: 2,
+                                            cursor: paramsNoteId !== note.id && 'pointer',
+                                            '&:hover': {
+                                                bgcolor: paramsNoteId !== note.id && 'var(--grey)',
+                                            },
+                                        }}
+                                        className='fade-in'
+                                    >
+                                        <CardActionArea
+                                            disabled={paramsNoteId === note.id}
+                                            onClick={() => navigate('/notes/' + note.id)}
+                                        >
+                                            <CardContent>
+                                                <Typography variant='h6' gutterBottom>
+                                                    {note.title}
+                                                </Typography>
+                                                <Typography color='text.secondary' fontSize={'11px'} variant='caption' gutterBottom>
+                                                    {DateManager.convertDate(note.updated)}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                ))}
+                            </>
+                    }
                 </Box>
                 {userInfo.isAccept && (
                     !Utils.isEmpty(userInfo.temp, userInfo.state) ?
@@ -216,13 +178,13 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
-                                    p: 1,
-                                    pb: 0,
                                 }}
                                 className='fade-in'
                             >
-                                <PlaceIcon /> {/** */}
-                                <Typography variant='subtitle1' mr={1}>{userInfo.state}</Typography>
+                                <PlaceIcon />
+                                <Tooltip title={userInfo.state} placement='top' sx={{ cursor: userInfo.state.split('-').length > 1 && 'help' }}>
+                                    <Typography width={100} variant='subtitle1' mr={1}>{userInfo.state.split('-').length > 1 ? userInfo.state.split('-')[0] + '-...' : userInfo.state}</Typography>
+                                </Tooltip>
                                 <ThermostatIcon />
                                 <Typography variant='subtitle1'>{userInfo.temp}°C</Typography>
                             </Box>
@@ -233,30 +195,61 @@ export default function Home({ getNotes, updateNote, addNote, getSpecificNote, d
             {/* END LEFT BOX */}
 
             {/* RIGHT BOX */}
+
             <Box
                 sx={{
                     width: '95%',
                     height: '100vh',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: (Utils.objSize(notes) === 0 || Utils.isEmpty(currentNote)) && 'center',
+                    alignItems: (Utils.objSize(notes) === 0 || Utils.isEmpty(notes.filter(elt => elt.id === paramsNoteId)[0])) && 'center',
                     "& .MuiOutlinedInput-notchedOutline": {
                         border: 'none',
-                    }
+                    },
+                    cursor: 'text'
                 }}
+                onClick={notes.length === 0 ? fecthAddNote : null}
             >
-                {Utils.objSize(currentNote) !== 0 && (
-                    <>
-                        <Note
-                            currentNote={currentNote}
-                            onChangeNote={handleChangeUpdateNote}
-                        />
-                        {isSaving && (
-                            <Fade in={isSaving}>
-                                <Typography variant='body1' sx={{ mx: 3 }}>Enregistré !</Typography>
-                            </Fade>)}
-
-                    </>)}
+                {!Utils.isEmpty(notes) && (
+                    Utils.isEmpty(notes.find(elt => elt.id === paramsNoteId))
+                        ? <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '100%'
+                            }}
+                        >
+                            <Typography variant="h6" color={'grey'}>Sélectionnez une note</Typography>
+                        </Box>
+                        :
+                        <>
+                            <Note
+                                currentNote={notes.find(elt => elt.id === paramsNoteId)}
+                                onChangeNote={fetchUpdateNote}
+                                notes={notes}
+                                noteIsPin={notes.find(elt => elt.id === paramsNoteId).pin}
+                                onSubmitSearchbar={id => navigate('/notes/' + id)}
+                                onClickDelete={() => {
+                                    deleteNote(paramsNoteId, () => {
+                                        fetchNote();
+                                        toast.success('Note supprimée avec succès', { position: 'bottom-right' })
+                                    });
+                                }}
+                                onClickPin={(pin) => {
+                                    // if (pin) {
+                                    //     addPin(paramsNoteId);
+                                    // } else {
+                                    //     deletePin(notes.find(elt => elt.id === paramsNoteId).id);
+                                    // };
+                                }}
+                            />
+                            {isSaving && (
+                                <Fade in={isSaving}>
+                                    <Typography variant='body1' sx={{ mx: 3 }}>Enregistré !</Typography>
+                                </Fade>)}
+                        </>
+                )}
             </Box>
             {/* END RIGHT BOX */}
 

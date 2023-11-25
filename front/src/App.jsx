@@ -2,9 +2,11 @@ import React from 'react';
 import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import HomePage from './views/Home';
+import Home from './views/Home';
 import Utils from './utils/Utils';
 import Http from './utils/Http';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './views/animations.css';
 
 /**
@@ -59,8 +61,8 @@ export default function App() {
 
   /**
    * @param {String} title 
-   * @param {Date} updated 
    * @param {String} content 
+   * @param {Date} updated 
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
   */
@@ -81,13 +83,14 @@ export default function App() {
   /**
    * @param {Number} index 
    * @param {String} title 
-   * @param {Date} updated 
    * @param {String} content 
+   * @param {Date} updated 
+   * @param {Date} created 
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
   */
-  const update_note = (index, title, updated, content, funcAs200, funcAsErr) => {
-    Http.request_update_note(index, title, updated, content, (statusCode, jsonBody) => {
+  const update_note = (index, title, content, updated, createdAt, funcAs200, funcAsErr) => {
+    Http.request_update_note(index, title, content, updated, createdAt, (statusCode, jsonBody) => {
       if (statusCode === 200) {
         if (!Utils.isEmpty(funcAs200)) {
           funcAs200(jsonBody);
@@ -120,11 +123,66 @@ export default function App() {
   };
 
   /**
+   * @param {funcAs200Callback} funcAs200 
+   * @param {funcAsErrCallback} funcAsErr 
+  */
+  const get_pin = (funcAs200, funcAsErr) => {
+    Http.request_get_pin((statusCode, jsonBody) => {
+      if (statusCode === 200) {
+        if (!Utils.isEmpty(funcAs200)) {
+          funcAs200(jsonBody);
+        }
+      } else {
+        if (!Utils.isEmpty(funcAsErr)) {
+          funcAsErr(jsonBody, statusCode);
+        }
+      }
+    });
+  };
+
+  /**
+   * @param {String} noteId 
+  */
+  const add_pin = (noteId, funcAs200, funcAsErr) => {
+    Http.request_add_pin(noteId, (statusCode, jsonBody) => {
+      if (statusCode === 200 || statusCode === 201) {
+        if (!Utils.isEmpty(funcAs200)) {
+          funcAs200(jsonBody);
+        }
+      } else {
+        if (!Utils.isEmpty(funcAsErr)) {
+          funcAsErr(jsonBody, statusCode);
+        }
+      }
+    });
+  };
+
+
+  /**
+   * @param {Number} index
+   * @param {funcAs200Callback} funcAs200 
+   * @param {funcAsErrCallback} funcAsErr 
+  */
+  const delete_pin = (index, funcAs200, funcAsErr) => {
+    Http.request_delete_pin(index, (statusCode, jsonBody) => {
+      if (statusCode === 200) {
+        if (!Utils.isEmpty(funcAs200)) {
+          funcAs200(jsonBody);
+        }
+      } else {
+        if (!Utils.isEmpty(funcAsErr)) {
+          funcAsErr(jsonBody, statusCode);
+        }
+      }
+    });
+  };
+
+  /**
    * @param {Number} lat 
    * @param {Number} long 
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
-   */
+  */
   const get_weather = (lat, long, funcAs200, funcAsErr) => {
     Http.request_get_weather(lat, long, (statusCode, jsonBody) => {
       if (statusCode === 200) {
@@ -156,32 +214,32 @@ export default function App() {
           <Route
             path="/notes"
             element={
-              <HomePage
+              <Home
+                getNotes={get_notes}
+                addNote={add_note}
+              />
+            }
+          />
+          <Route
+            path="/notes/:noteId"
+            element={
+              <Home
                 deleteNote={delete_note}
-                getSpecificNote={get_specific_note}
                 getNotes={get_notes}
                 addNote={add_note}
                 updateNote={update_note}
                 getWeather={get_weather}
+                getPin={get_pin}
+                addPin={add_pin}
+                deletePin={delete_pin}
               />
             }
-          >
-            <Route
-              path=":noteId"
-              element={
-                <HomePage
-                  deleteNote={delete_note}
-                  getSpecificNote={get_specific_note}
-                  getNotes={get_notes}
-                  addNote={add_note}
-                  updateNote={update_note}
-                  getWeather={get_weather}
-                />
-              }
-            />
-          </Route>
+          />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
+
+      <ToastContainer theme='dark' />
     </ThemeProvider>
   );
 };
