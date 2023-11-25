@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Pagination, Skeleton, Tooltip, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import ThermostatIcon from '@mui/icons-material/Thermostat';
-import PlaceIcon from '@mui/icons-material/Place';
 import DateManager from '../utils/DateManager';
 import Utils from '../utils/Utils';
 import Note from '../components/Note';
@@ -23,7 +21,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     const paramsNoteId = Number.parseInt(params.noteId);
     const [isLoadingRequest, setIsLoadingRequest] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const notesPerPage = 5; // Nombre de notes à afficher par page
+    const notesPerPage = 9; // Nombre de notes à afficher par page
 
     /**
      * Fonction pour récupérer les notes
@@ -200,15 +198,16 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                             </>
                     }
                 </Box>
-                <Pagination
-                    count={Math.ceil(notes.length / notesPerPage)}
-                    shape="rounded"
-                    page={currentPage}
-                    onChange={(event, value) => setCurrentPage(value)}
-                    size='small'
-                    hidePrevButton
-                    hideNextButton
-                />
+                {Math.ceil(notes.length / notesPerPage) > 1 && (
+                    <Pagination
+                        count={Math.ceil(notes.length / notesPerPage)}
+                        shape="rounded"
+                        page={currentPage}
+                        onChange={(event, value) => setCurrentPage(value)}
+                        size='small'
+                        hidePrevButton
+                        hideNextButton
+                    />)}
             </Box>
             {/* END LEFT BOX */}
 
