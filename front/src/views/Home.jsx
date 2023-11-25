@@ -32,22 +32,26 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
         if (!Utils.isEmpty(getNotes, addNote)) {
             getNotes((notes) => {
                 setIsLoadingRequest(false);
+                // Filtre les notes par pin et date de derniere modification
                 const notesSorted = notes.sort((a, b) => {
                     if (a.pin && !b.pin) return -1;
                     if (!a.pin && b.pin) return 1;
                     return new Date(b.updated) - new Date(a.updated);
                 });
                 setNotes(notesSorted);
-                if (!Utils.isEmpty(notesSorted) && Utils.isEmpty(paramsNoteId)) {
-                    navigate('/notes/' + notesSorted[0].id);
-                };
+                // Met a jour la page de la note pour la pagination
+                const selectedNoteIndex = notes.findIndex((note) => note.id === paramsNoteId);
+                if (selectedNoteIndex !== -1) {
+                    const page = Math.ceil((selectedNoteIndex + 1) / notesPerPage);
+                    setCurrentPage(page);
+                }
+
+                // if (!Utils.isEmpty(notesSorted) && Utils.isEmpty(paramsNoteId)) {
+                //     navigate('/notes/' + notesSorted[0].id);
+                // };
             });
         };
     };
-
-    useEffect(() => {
-        fetchNote();
-    }, [currentPage]);
 
     /**
      * Fonction pour ajouter une note
@@ -98,7 +102,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
      */
     useEffect(() => {
         setIsLoadingRequest(true);
-
+        fetchNote();
         if (!Utils.isEmpty(getWeather)) {
             // Récupère la ville et la météo de l'utilisateur
             Utils.getUserInfo().then((userInfo) => {
@@ -112,10 +116,6 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
             });
         };
     }, []);
-
-    const indexOfLastNote = currentPage * notesPerPage;
-    const indexOfFirstNote = indexOfLastNote - notesPerPage;
-    const currentNotes = notes.slice(indexOfFirstNote, indexOfLastNote);
 
     return (
         <Box display={'flex'} height={'100vh'}>
@@ -154,7 +154,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                             Chargement
                             <CircularProgress sx={{ ml: 2 }} size={20} />
                         </Typography>
-                        : Utils.isEmpty(currentNotes)
+                        : Utils.isEmpty(notes)
                             ? <Box
                                 sx={{
                                     display: 'flex',
@@ -167,34 +167,36 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                             </Box>
                             :
                             <>
-                                {currentNotes.map(note => (
-                                    <Card
-                                        key={note.id}
-                                        variant={paramsNoteId === note.id ? 'outlined' : 'elevation'}
-                                        sx={{
-                                            mt: 2,
-                                            cursor: paramsNoteId !== note.id && 'pointer',
-                                            '&:hover': {
-                                                bgcolor: paramsNoteId !== note.id && 'var(--grey)',
-                                            },
-                                        }}
-                                        className='fade-in'
-                                    >
-                                        <CardActionArea
-                                            disabled={paramsNoteId === note.id}
-                                            onClick={() => navigate('/notes/' + note.id)}
+                                {notes
+                                    .slice((currentPage * notesPerPage) - notesPerPage, currentPage * notesPerPage)
+                                    .map(note => (
+                                        <Card
+                                            key={note.id}
+                                            variant={paramsNoteId === note.id ? 'outlined' : 'elevation'}
+                                            sx={{
+                                                mt: 2,
+                                                cursor: paramsNoteId !== note.id && 'pointer',
+                                                '&:hover': {
+                                                    bgcolor: paramsNoteId !== note.id && 'var(--grey)',
+                                                },
+                                            }}
+                                            className='fade-in'
                                         >
-                                            <CardContent>
-                                                <Typography variant='h6' gutterBottom>
-                                                    {note.title}
-                                                </Typography>
-                                                <Typography color='text.secondary' fontSize={'11px'} variant='caption' gutterBottom>
-                                                    {DateManager.convertDate(note.updated)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                ))}
+                                            <CardActionArea
+                                                disabled={paramsNoteId === note.id}
+                                                onClick={() => navigate('/notes/' + note.id)}
+                                            >
+                                                <CardContent>
+                                                    <Typography variant='h6' gutterBottom>
+                                                        {note.title}
+                                                    </Typography>
+                                                    <Typography color='text.secondary' fontSize={'11px'} variant='caption' gutterBottom>
+                                                        {DateManager.convertDate(note.updated)}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                    ))}
                             </>
                     }
                 </Box>
