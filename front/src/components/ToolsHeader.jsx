@@ -45,6 +45,8 @@ export default function ToolsHeader({ noteIsPin, profileData, noteIdChecked, onC
                     alignItems: 'center'
                 }}
             >
+                <ModalConfirmationDeleteNote onClick={onClickDelete} />
+                <Divider sx={{ height: 28, mx: 1 }} orientation="vertical" />
                 <IconButton
                     onClick={() => {
                         onClickPin(!isPinActive);
@@ -53,7 +55,6 @@ export default function ToolsHeader({ noteIsPin, profileData, noteIdChecked, onC
                 >
                     {isPinActive ? <PushPinIcon fontSize='small' /> : <PushPinOutlinedIcon fontSize='small' />}
                 </IconButton>
-                <ModalConfirmationDeleteNote onClick={onClickDelete} />
                 <FormControlLabel
                     sx={{ mx: 0 }}
                     control={
