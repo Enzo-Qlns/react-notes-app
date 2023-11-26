@@ -86,6 +86,7 @@ export default function App() {
    * @param {String} title 
    * @param {String} content 
    * @param {Boolean} pin 
+   * @param {Boolean} checked 
    * @param {Date} updatedAt 
    * @param {Date} created 
    * @param {funcAs200Callback} funcAs200 
