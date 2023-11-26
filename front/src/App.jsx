@@ -63,12 +63,12 @@ export default function App() {
   /**
    * @param {String} title 
    * @param {String} content 
-   * @param {Date} updated 
+   * @param {Date} updatedAt 
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
   */
-  const add_note = (title, updated, content, funcAs200, funcAsErr) => {
-    Http.request_add_note(title, updated, content, (statusCode, jsonBody) => {
+  const add_note = (title, updatedAt, content, funcAs200, funcAsErr) => {
+    Http.request_add_note(title, updatedAt, content, (statusCode, jsonBody) => {
       if (statusCode === 200 || statusCode === 201) {
         if (!Utils.isEmpty(funcAs200)) {
           funcAs200(jsonBody);
@@ -86,13 +86,13 @@ export default function App() {
    * @param {String} title 
    * @param {String} content 
    * @param {Boolean} pin 
-   * @param {Date} updated 
+   * @param {Date} updatedAt 
    * @param {Date} created 
    * @param {funcAs200Callback} funcAs200 
    * @param {funcAsErrCallback} funcAsErr 
   */
-  const update_note = (index, title, content, pin, checked, updated, createdAt, funcAs200, funcAsErr) => {
-    Http.request_update_note(index, title, content, pin, checked, updated, createdAt, (statusCode, jsonBody) => {
+  const update_note = (index, title, content, pin, checked, updatedAt, createdAt, funcAs200, funcAsErr) => {
+    Http.request_update_note(index, title, content, pin, checked, updatedAt, createdAt, (statusCode, jsonBody) => {
       if (statusCode === 200) {
         if (!Utils.isEmpty(funcAs200)) {
           funcAs200(jsonBody);

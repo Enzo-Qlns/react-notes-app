@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import { DialogContent, IconButton } from '@mui/material';
+import { DialogContent, IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function AlertDialogSlide({ onClick }) {
@@ -19,9 +19,11 @@ export default function AlertDialogSlide({ onClick }) {
 
     return (
         <div>
-            <IconButton onClick={handleClickOpen}>
-                <DeleteIcon fontSize='small' />
-            </IconButton>
+            <Tooltip title='supprimée'>
+                <IconButton onClick={handleClickOpen}>
+                    <DeleteIcon fontSize='small' />
+                </IconButton>
+            </Tooltip>
             <Dialog
                 open={open}
                 onClose={handleClose}

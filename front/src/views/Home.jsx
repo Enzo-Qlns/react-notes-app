@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Pagination, Typography } from '@mui/material';
+import { Badge, Box, Card, CardActionArea, CardContent, CircularProgress, IconButton, Pagination, Typography } from '@mui/material';
 import Fade from '@mui/material/Fade';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DateManager from '../utils/DateManager';
 import Utils from '../utils/Utils';
 import Note from '../components/Note';
 import { toast } from 'react-toastify';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 export default function Home({ getNotes, updateNote, addNote, deleteNote, getWeather, getProfile }) {
     const [notes, setNotes] = useState([]);
@@ -21,7 +23,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
     const paramsNoteId = Number.parseInt(params.noteId);
     const [isLoadingRequest, setIsLoadingRequest] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const notesPerPage = 9; // Nombre de notes à afficher par page
+    const notesPerPage = 9;
     const [profileData, setProfileData] = useState(null);
 
     /**
@@ -35,7 +37,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                 const notesSorted = notes.sort((a, b) => {
                     if (a.pin && !b.pin) return -1;
                     if (!a.pin && b.pin) return 1;
-                    return new Date(b.updated) - new Date(a.updated);
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
                 });
                 setNotes(notesSorted);
                 // Met a jour la page de la note pour la pagination
@@ -87,7 +89,7 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                 const notesSorted = notes.sort((a, b) => {
                     if (a.pin && !b.pin) return -1;
                     if (!a.pin && b.pin) return 1;
-                    return new Date(b.updated) - new Date(a.updated);
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
                 });
                 setNotes(notesSorted);
                 if (!Utils.isEmpty(notesSorted))
@@ -190,11 +192,22 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                                                 onClick={() => navigate('/notes/' + note.id)}
                                             >
                                                 <CardContent>
-                                                    <Typography variant='h6' gutterBottom>
+                                                    <Typography
+                                                        variant='h6'
+                                                        gutterBottom
+                                                        component={'div'}
+                                                        display={'flex'}
+                                                        alignItems={'center'}
+                                                        justifyContent={'space-between'}
+                                                    >
                                                         {note.title}
+                                                        {note.checked
+                                                            ? <CheckCircleRoundedIcon />
+                                                            : <CheckCircleOutlineIcon />
+                                                        }
                                                     </Typography>
                                                     <Typography color='text.secondary' fontSize={'11px'} variant='caption' gutterBottom>
-                                                        {DateManager.convertDate(note.updated)}
+                                                        {DateManager.convertDate(note.updatedAt)}
                                                     </Typography>
                                                 </CardContent>
                                             </CardActionArea>
@@ -263,15 +276,15 @@ export default function Home({ getNotes, updateNote, addNote, deleteNote, getWea
                                 onSubmitSearchbar={id => navigate('/notes/' + id)}
                                 onClickDelete={fetchDeleteNote}
                                 onClickPin={(pin) => {
-                                    let title = notes.find(elt => elt.id === paramsNoteId).title;
-                                    let content = notes.find(elt => elt.id === paramsNoteId).content;
-                                    let checked = notes.find(elt => elt.id === paramsNoteId).checked;
+                                    const title = notes.find(elt => elt.id === paramsNoteId).title;
+                                    const content = notes.find(elt => elt.id === paramsNoteId).content;
+                                    const checked = notes.find(elt => elt.id === paramsNoteId).checked;
                                     fetchUpdateNote(title, content, pin, checked);
                                 }}
                                 onChangeCheckedDone={(checked) => {
-                                    let title = notes.find(elt => elt.id === paramsNoteId).title;
-                                    let content = notes.find(elt => elt.id === paramsNoteId).content;
-                                    let pin = notes.find(elt => elt.id === paramsNoteId).pin;
+                                    const title = notes.find(elt => elt.id === paramsNoteId).title;
+                                    const content = notes.find(elt => elt.id === paramsNoteId).content;
+                                    const pin = notes.find(elt => elt.id === paramsNoteId).pin;
                                     fetchUpdateNote(title, content, pin, checked);
                                 }}
                                 profileData={profileData}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import { Avatar, Checkbox, FormControlLabel, IconButton, Modal } from '@mui/material';
+import { Avatar, Checkbox, FormControlLabel, IconButton, Modal, Tooltip } from '@mui/material';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import ModalConfirmationDeleteNote from './ModalConfirmationDeleteNote';
 import Paper from '@mui/material/Paper';
@@ -15,6 +15,8 @@ import Backdrop from '@mui/material/Backdrop';
 import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import Utils from '../utils/Utils';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 export default function ToolsHeader({ noteIsPin, profileData, noteIdChecked, onChangeCheckedDone, onClickPin, onClickDelete, onSubmitSearchbar }) {
     const [isPinActive, setIsPinActive] = useState(noteIsPin);
@@ -47,15 +49,30 @@ export default function ToolsHeader({ noteIsPin, profileData, noteIdChecked, onC
             >
                 <ModalConfirmationDeleteNote onClick={onClickDelete} />
                 <Divider sx={{ height: 28, mx: 1 }} orientation="vertical" />
-                <IconButton
-                    onClick={() => {
-                        onClickPin(!isPinActive);
-                        setIsPinActive(!isPinActive);
-                    }}
-                >
-                    {isPinActive ? <PushPinIcon fontSize='small' /> : <PushPinOutlinedIcon fontSize='small' />}
-                </IconButton>
-                <FormControlLabel
+                <Tooltip title='pin'>
+                    <IconButton
+                        onClick={() => {
+                            onClickPin(!isPinActive);
+                            setIsPinActive(!isPinActive);
+                        }}
+                    >
+                        {isPinActive ? <PushPinIcon fontSize='small' /> : <PushPinOutlinedIcon fontSize='small' />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title='réalisée'>
+                    <IconButton
+                        onClick={() => {
+                            setIsCheckedActive(!isCheckedActive);
+                            onChangeCheckedDone(!isCheckedActive);
+                        }}
+                    >
+                        {isCheckedActive
+                            ? <CheckCircleRoundedIcon />
+                            : <CheckCircleOutlineIcon />
+                        }
+                    </IconButton>
+                </Tooltip>
+                {/* <FormControlLabel
                     sx={{ mx: 0 }}
                     control={
                         <Checkbox
@@ -68,7 +85,7 @@ export default function ToolsHeader({ noteIsPin, profileData, noteIdChecked, onC
                         />
                     }
                     label="Réalisée"
-                />
+                /> */}
             </Box>
             <Box
                 sx={{
@@ -205,7 +222,7 @@ function ModalUser({ profileData }) {
                         }}
                     >
                         <Typography id="transition-modal-title" variant="h6" component="h2">
-                            Bonjour {Utils.capitalizeFirstLetter(profileData.firstname) + ' ' + profileData.lastname.toUpperCase()}
+                            Bonjour {Utils.capitalizeFirstLetter(profileData.firstname) + ' ' + profileData.lastname.toUpperCase()} !
                         </Typography>
                         <Typography id="transition-modal-description" sx={{ mt: 2 }}>
                             <span style={{ fontWeight: 'bold' }}>

@@ -50,10 +50,10 @@ const Http = {
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 
-    request_add_note(title, content, updated, onResponse = undefined) {
+    request_add_note(title, content, updatedAt, onResponse = undefined) {
         const options = this.defaultOptions();
         options.method = 'POST';
-        options.body = JSON.stringify({ "title": title, "content": content, "pin": false, "checked": false, "updated": updated, "createdAt": new Date() });
+        options.body = JSON.stringify({ "title": title, "content": content, "pin": false, "checked": false, "updatedAt": updatedAt, "createdAt": new Date() });
         return this.call(Vars.getHost() + '/notes/', options, onResponse);
     },
 
@@ -63,10 +63,10 @@ const Http = {
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 
-    request_update_note(index, title, content, pin, checked, updated, createdAt, onResponse = undefined) {
+    request_update_note(index, title, content, pin, checked, updatedAt, createdAt, onResponse = undefined) {
         const options = this.defaultOptions();
         options.method = 'PUT';
-        options.body = JSON.stringify({ "title": title, "content": content, "pin": pin, "checked": checked, "updated": updated, "createdAt": createdAt });
+        options.body = JSON.stringify({ "title": title, "content": content, "pin": pin, "checked": checked, "updatedAt": updatedAt, "createdAt": createdAt });
         return this.call(Vars.getHost() + '/notes/' + index, options, onResponse);
     },
 
